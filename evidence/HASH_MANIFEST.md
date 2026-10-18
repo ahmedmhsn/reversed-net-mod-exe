@@ -3,7 +3,7 @@
 SHA-256 for every file published in this repository, plus the SHA-256 of
 the two **source artifacts that are deliberately not redistributed**.
 
-Generated: **2026-10-18 23:00:31 UTC**
+Generated: **2026-10-18 23:03:10 UTC**
 
 > This manifest covers the published documentation only. It does **not**
 > grant redistribution rights in any artifact listed under
@@ -11,7 +11,10 @@ Generated: **2026-10-18 23:00:31 UTC**
 
 ---
 
-## Published files (40 files, 283,508 bytes)
+## Published files (39 files, 275,163 bytes)
+
+*This file is not listed in its own table: a file cannot contain its own
+SHA-256 without becoming permanently stale.*
 
 | # | File | Bytes | SHA-256 |
 |---:|---|---:|---|
@@ -40,21 +43,20 @@ Generated: **2026-10-18 23:00:31 UTC**
 | 23 | [`docs/TECHNOLOGY_STACK.md`](../docs/TECHNOLOGY_STACK.md) | 9,719 | `e7772a6eaa056f68b8f78951853e23fe6c6f2266bf863c95892438c0fdec70ac` |
 | 24 | [`docs/VALIDATION.md`](../docs/VALIDATION.md) | 12,308 | `a35f44f1c23950cc2ca8c18cd12b2f839f1b526f1994e21d1c4e79a31133fb94` |
 | 25 | [`evidence/EVIDENCE_INDEX.md`](../evidence/EVIDENCE_INDEX.md) | 7,763 | `2f63fdfb5411ea55dda49cf4d835fe1ce4dfcaebd0540741f6afab2f8f72e7d5` |
-| 26 | [`evidence/HASH_MANIFEST.md`](../evidence/HASH_MANIFEST.md) | 8,345 | `cc8c0b75640cb39a7ce5d9f1f159f7fdd0884dca8795d607c36fabf48d9399e3` |
-| 27 | [`evidence/RESOURCE_ORIGIN_VERIFICATION.txt`](../evidence/RESOURCE_ORIGIN_VERIFICATION.txt) | 3,318 | `4777598dfea709e8f0600d16b0496211b986c7d9f5d6ad4c802355972fa56ed1` |
-| 28 | [`evidence/VALIDATION_SUMMARY.md`](../evidence/VALIDATION_SUMMARY.md) | 4,440 | `e5c88e53b0afdcda8d992a232013b88ac13b1c2ef51ef4a2ebdb333997c70f04` |
-| 29 | [`findings/README.md`](../findings/README.md) | 4,655 | `84680b184c57d3fa773aab942e5d16c79330b758e1f982fe91ebfc7117d49070` |
-| 30 | [`findings/confirmed/NF-01-tls-certificate-validation.md`](../findings/confirmed/NF-01-tls-certificate-validation.md) | 5,467 | `c007d9ed2fba05add085dd79067d4a2e8974add9c7bc72e099836e1a70290304` |
-| 31 | [`findings/confirmed/NF-02-update-integrity.md`](../findings/confirmed/NF-02-update-integrity.md) | 4,805 | `7a64dd0095ee620a74f44c283c0514ecb6b00c0443e9ca8f5ca81ad2528ffaac` |
-| 32 | [`findings/confirmed/NF-03-default-gateway-restore.md`](../findings/confirmed/NF-03-default-gateway-restore.md) | 4,390 | `f9b294ffef3eedbfc8d4a822aec1e6bd9ae8155104edbf533d2c9c6074911ff4` |
-| 33 | [`findings/confirmed/NF-04-ipc-broadcast-channel.md`](../findings/confirmed/NF-04-ipc-broadcast-channel.md) | 4,868 | `2ac2af48bb098c42ef983ea3ac53b07173544b58eb79aa3788c4e239d4d24bd7` |
-| 34 | [`findings/confirmed/NF-05-embedded-api-key.md`](../findings/confirmed/NF-05-embedded-api-key.md) | 3,002 | `62a1ebda856a1798a8a62c5ff1c154d7e31911cf06b1ad517118337ae53bc040` |
-| 35 | [`findings/inferred/NF-08-anti-tamper.md`](../findings/inferred/NF-08-anti-tamper.md) | 3,564 | `23dbe5f972fb849b39b00f833e8bb259bf8a1c40f82e04ff1857674f0f903f68` |
-| 36 | [`findings/unresolved/NF-06-update-payload-launch.md`](../findings/unresolved/NF-06-update-payload-launch.md) | 3,534 | `919ed2cc0c615c87f243d76b7b7f7f78e287b79c30c48e3e5b27470f8dd1afa9` |
-| 37 | [`findings/unresolved/NF-07-embedded-assembly-gap.md`](../findings/unresolved/NF-07-embedded-assembly-gap.md) | 5,105 | `681986df0368ed76a47f601c9acdd97e5866e010a8fc3d4df9eda377b1b14cc7` |
-| 38 | [`tools/README.md`](../tools/README.md) | 4,548 | `ad314ddd2b56b52b228466d430feb704448ecb6508ee8ed419ba89223ba9386a` |
-| 39 | [`tools/SrmProbe/Program.cs`](../tools/SrmProbe/Program.cs) | 5,782 | `d5a528f6d285efc3b69399d4cbdd9effd80d7fd62bf1dd668810244d0e056087` |
-| 40 | [`tools/SrmProbe/SrmProbe.csproj`](../tools/SrmProbe/SrmProbe.csproj) | 381 | `262f61f9c81789aea88f44513d204a3443676238bcb5ac8eee7c69e29c947507` |
+| 26 | [`evidence/RESOURCE_ORIGIN_VERIFICATION.txt`](../evidence/RESOURCE_ORIGIN_VERIFICATION.txt) | 3,318 | `4777598dfea709e8f0600d16b0496211b986c7d9f5d6ad4c802355972fa56ed1` |
+| 27 | [`evidence/VALIDATION_SUMMARY.md`](../evidence/VALIDATION_SUMMARY.md) | 4,440 | `e5c88e53b0afdcda8d992a232013b88ac13b1c2ef51ef4a2ebdb333997c70f04` |
+| 28 | [`findings/README.md`](../findings/README.md) | 4,655 | `84680b184c57d3fa773aab942e5d16c79330b758e1f982fe91ebfc7117d49070` |
+| 29 | [`findings/confirmed/NF-01-tls-certificate-validation.md`](../findings/confirmed/NF-01-tls-certificate-validation.md) | 5,467 | `c007d9ed2fba05add085dd79067d4a2e8974add9c7bc72e099836e1a70290304` |
+| 30 | [`findings/confirmed/NF-02-update-integrity.md`](../findings/confirmed/NF-02-update-integrity.md) | 4,805 | `7a64dd0095ee620a74f44c283c0514ecb6b00c0443e9ca8f5ca81ad2528ffaac` |
+| 31 | [`findings/confirmed/NF-03-default-gateway-restore.md`](../findings/confirmed/NF-03-default-gateway-restore.md) | 4,390 | `f9b294ffef3eedbfc8d4a822aec1e6bd9ae8155104edbf533d2c9c6074911ff4` |
+| 32 | [`findings/confirmed/NF-04-ipc-broadcast-channel.md`](../findings/confirmed/NF-04-ipc-broadcast-channel.md) | 4,868 | `2ac2af48bb098c42ef983ea3ac53b07173544b58eb79aa3788c4e239d4d24bd7` |
+| 33 | [`findings/confirmed/NF-05-embedded-api-key.md`](../findings/confirmed/NF-05-embedded-api-key.md) | 3,002 | `62a1ebda856a1798a8a62c5ff1c154d7e31911cf06b1ad517118337ae53bc040` |
+| 34 | [`findings/inferred/NF-08-anti-tamper.md`](../findings/inferred/NF-08-anti-tamper.md) | 3,564 | `23dbe5f972fb849b39b00f833e8bb259bf8a1c40f82e04ff1857674f0f903f68` |
+| 35 | [`findings/unresolved/NF-06-update-payload-launch.md`](../findings/unresolved/NF-06-update-payload-launch.md) | 3,534 | `919ed2cc0c615c87f243d76b7b7f7f78e287b79c30c48e3e5b27470f8dd1afa9` |
+| 36 | [`findings/unresolved/NF-07-embedded-assembly-gap.md`](../findings/unresolved/NF-07-embedded-assembly-gap.md) | 5,105 | `681986df0368ed76a47f601c9acdd97e5866e010a8fc3d4df9eda377b1b14cc7` |
+| 37 | [`tools/README.md`](../tools/README.md) | 4,548 | `ad314ddd2b56b52b228466d430feb704448ecb6508ee8ed419ba89223ba9386a` |
+| 38 | [`tools/SrmProbe/Program.cs`](../tools/SrmProbe/Program.cs) | 5,782 | `d5a528f6d285efc3b69399d4cbdd9effd80d7fd62bf1dd668810244d0e056087` |
+| 39 | [`tools/SrmProbe/SrmProbe.csproj`](../tools/SrmProbe/SrmProbe.csproj) | 381 | `262f61f9c81789aea88f44513d204a3443676238bcb5ac8eee7c69e29c947507` |
 
 ## Verification
 
