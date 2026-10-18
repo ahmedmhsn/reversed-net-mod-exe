@@ -1,0 +1,65 @@
+%% Trust boundaries - local process, network, update, IPC and storage.
+%% Each boundary is annotated with the control the evidence establishes.
+flowchart LR
+
+    subgraph B1["TB1 - local process boundary"]
+        direction TB
+        UNTRUSTED["Any local process<br/><i>same desktop session</i>"]
+        ATOM["Global atom table<br/>session-wide"]
+        WINMSG["HWND_BROADCAST<br/>0xFFFF"]
+        APPPROC["NetMod.exe<br/>0x06000075 .. IL_0037"]
+        GUARD{"Validate sender?"}:::nodef
+        APPPROC -->|"GlobalAddAtom"| ATOM
+        ATOM -->|"SendMessage(msgId, len, atom)"| WINMSG
+        WINMSG --> APPPROC
+        UNTRUSTED -.->|"can also write the atom table<br/>and broadcast"| ATOM
+        APPPROC --> GUARD
+        GUARD -->|"NO - UNRESOLVED<br/>no receiver behaviour recovered"| UNTRUSTED
+    end
+
+    subgraph B2["TB2 - network boundary (transport security)"]
+        direction TB
+        UPSTREAM["Upstream proxy server"]
+        LOCAL["Local proxy, loopback"]
+        CB["Certificate validation callback<br/>0x06000457 / 0x06000692<br/>body: 17 2a"]
+        SSL["SslStream"]
+        CB -.->|"returns true unconditionally"| SSL
+        LOCAL --> SSL --> UPSTREAM
+    end
+
+    subgraph B3["TB3 - update boundary"]
+        direction TB
+        USERVER["Update host"]
+        PAYLOAD["Downloaded payload"]
+        NOVERIFY["<b>No signature / hash check</b><br/>CONFIRMED"]
+        USERVER --> PAYLOAD --> NOVERIFY
+    end
+
+    subgraph B4["TB4 - storage boundary"]
+        direction TB
+        SETTINGS["user.config XML<br/>CustomSettingsProvider"]
+        DB["SQLite store<br/>DbManager"]
+        ENC["EF Core DataEncryption<br/>AesProvider"]
+        LIC["licence document<br/>MainJSON · Encryption"]
+        DB --> ENC
+        ENC --> LIC
+        SETTINGS -.->|"plaintext"| LIC
+    end
+
+    subgraph B5["TB5 - host network state"]
+        direction TB
+        ROUTES["Routing table"]
+        DNSSRV["Interface DNS"]
+        RESTORE["Single restoration site<br/>0x060006C3"]:::confirmed
+        APPPROC2["VpnService"]:::confirmed
+        APPPROC2 -->|"add / remove"| ROUTES
+        APPPROC2 -->|"set / unset"| DNSSRV
+        RESTORE -->|"disconnect only"| ROUTES
+        RESTORE -.->|"UNRESOLVED after abnormal exit"| ROUTES
+    end
+
+    classDef confirmed fill:#e8f5e9,stroke:#2e7d32
+    classDef nodef fill:#ffebee,stroke:#c62828,stroke-width:2px
+
+    class GUARD,NOVERIFY,CB nodef
+    class RESTORE,APPPROC2,APPPROC confirmed

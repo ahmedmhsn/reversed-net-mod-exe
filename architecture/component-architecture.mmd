@@ -1,0 +1,113 @@
+%% Component architecture - namespaces as recovered from TypeDef metadata
+%% Type names are reported exactly as they appear in the binary.
+flowchart TB
+
+    subgraph PRES["Presentation - 51 types"]
+        direction LR
+        WIN["UI.Window (14)<br/>MainWindow · MetroWindowCustom<br/>SocksWindow · V2RayWindow · AboutWindow"]
+        TAB["UI.Tab (10)<br/>SettingsTab · ProxyTab · SshTab<br/>V2RayTab · PayTab"]
+        DLG["UI.Dialog (9)<br/>DialogHwid · DialogMaterial"]
+        ADP["UI.Adapter (14)"]
+        MENU["UI.Menu (3)"]
+        WDG["Widget (5)<br/>CustomTextBox"]
+        MODEL["Model (10)<br/>MainWindowModel · ProxyModel<br/>SshModel · V2RayModel"]
+    end
+
+    subgraph SVC["Services - 5 types"]
+        direction LR
+        VPN["Service.VpnService"]
+        PXY["Service.ProxyServer<br/>+ ProxyHandler"]
+        V2R["Service.V2RayService"]
+        SSH["Service.SshService"]
+        NTF["Service.ServiceNotifier"]
+    end
+
+    subgraph CORE["Utils - 45 types"]
+        direction TB
+        CFG["ConfigPreferences · DefaultPreferences<br/>CustomSettingsProvider"]
+        NETM["NetworkManagement (24)<br/>routes · DNS · adapters"]
+        NSR["NetworkStatusReceiver (23)<br/>WMI route watcher"]
+        PROC["ProcessRunner (9)<br/><b>sole Process.Start site</b><br/>0x06000254"]
+        PW["ProcessWatcher (12)<br/>ChildProcessTracker (7)"]
+        UPD["UpdateApi (6)<br/>+ Constants 0x060000FA"]
+        V2C["V2RayConfig (46) · AddressConverter<br/>ProtoConverter"]
+        MISC["MainJSON · Encryption · DbManager<br/>NtpUdpClient · Pinger · Logger"]
+        WIFI["Utils.Wifi (8)<br/>TetheringManager · ICSManager<br/>WlanHostedNetworkManager"]
+    end
+
+    subgraph PERSIST["Persistence"]
+        direction LR
+        SET["Properties.Settings<br/>Properties.ConfigSettings"]
+        MIG["Migrations.initialcreate<br/>20221005033905_initialcreate"]
+        MIG2["Migrations.AddedPosToProfile<br/>20230416125047_AddedPosToProfile"]
+    end
+
+    subgraph MODULE["&lt;Module&gt; - anti-tamper"]
+        direction TB
+        CCTL["&lt;Module&gt;.cctor 0x06000001"]
+        DEC["IL decryptor 0x0600000A"]
+        FLD["xorshift32 + FieldRVA 0x06000007"]
+        LZ["LZMA 0x06000006"]
+        LOAD["Assembly.Load<br/>AppDomain.AssemblyResolve"]
+    end
+
+    NATIVE["<b>34 P/Invoke declarations</b><br/>kernel32 · user32 · iphlpapi<br/>wlanapi · dwmapi"]
+
+    CORE_["NetModMaterial.App 0x0600007E"]:::entry
+    INTEROP["NETCONLib (9)<br/>ICS COM wrappers"]
+
+    CORE_ --> WIN
+    WIN --> MODEL
+    WIN --> TAB
+    TAB --> DLG
+    WIN -.-> ADP
+    WIN -.-> MENU
+    WIN --> WDG
+
+    MODEL --> VPN
+    MODEL --> PXY
+    MODEL --> V2R
+    MODEL -.-> SSH
+    MODEL --> NTF
+
+    VPN --> NETM
+    VPN --> PROC
+    VPN --> V2R
+    VPN --> CFG
+    VPN --> NSR
+    V2R --> V2C
+    V2R --> PROC
+    PXY --> PROC
+    PXY --> V2C
+    NETM --> NATIVE
+    NSR --> NATIVE
+    WIFI --> INTEROP
+    WIFI --> NATIVE
+    VPN -.-> WIFI
+    VPN --> PW
+    PW --> NATIVE
+    PROC --> PW
+
+    CFG --> SET
+    MISC --> MIG
+    MIG --> MIG2
+    MISC --> SET
+
+    MODEL -.-> UPD
+    UPD --> PROC
+
+    CCTL --> DEC
+    DEC -.->|"rewrites method bodies"| MODULE
+    CCTL --> FLD
+    FLD --> LZ
+    LZ -.->|"stage 3 UNRESOLVED"| LOAD
+    LOAD -.-> MODEL
+
+    classDef entry fill:#e3f2fd,stroke:#1565c0,stroke-width:2px
+    classDef inferred fill:#fff8e1,stroke:#f9a825,stroke-dasharray:5 3
+    classDef native fill:#eceff1,stroke:#546e7a
+    classDef unresolved fill:#ffebee,stroke:#c62828,stroke-width:2px
+
+    class CORE_ entry
+    class LOAD unresolved
+    class NATIVE,INTEROP native

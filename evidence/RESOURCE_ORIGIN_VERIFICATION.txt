@@ -1,0 +1,66 @@
+RESOURCE ORIGIN VERIFICATION
+==============================================================================
+
+Claim under test: NetMod.exe does NOT contain its own WPF resources; both
+ManifestResource rows resolve to a separate, obfuscated assembly reference.
+
+1. Is there a File table (ManifestResourceFile, id 0x26)?
+   present in Valid mask : False
+   row count             : 0
+   => tag 0 (File) cannot be selected; only AssemblyRef (tag 1) or
+      ExportedType (tag 2) are expressible.
+
+2. Is there an ExportedType table (0x27)?  present=False rows=0
+
+3. Decode both ManifestResource rows.  ECMA-335 II.22.24 defines
+   Implementation as a 2-bit coded index:  0=File, 1=AssemblyRef, 2=ExportedType.
+
+   row 0  raw=00 00 00 00 01 00 00 00 ec bf 00 00 61 00
+          name='NetMod.g.resources'  offset=0x0  flags=0x1
+          Implementation=0x0061 -> tag=1 (AssemblyRef) row=24
+
+   row 1  raw=00 00 00 00 01 00 00 00 ff bf 00 00 61 00
+          name='NetModMaterial.Properties.Resources.resources'  offset=0x0  flags=0x1
+          Implementation=0x0061 -> tag=1 (AssemblyRef) row=24
+
+4. Resolve AssemblyRef #24.
+   AssemblyRef 24: name='PJrcRGGDZySncSGQBDxtMlBJuXsaA'  version=0.0.0.0  bytes=00 00 00 00 00 00 00 00 01 00 00 00 00 00 77 18 00 00 00 00 00 00 00 00
+
+5. Cross-check with System.Reflection.Metadata's own reading.
+   ManifestResource rows = 2
+   'NetMod.g.resources' offset=0x0 attrs=0x00000001 impl=AssemblyReference
+   'NetModMaterial.Properties.Resources.resources' offset=0x0 attrs=0x00000001 impl=AssemblyReference
+
+6. Corroborating context
+   * AssemblyRef #24's name is 25 characters of mixed-case ASCII with no
+     dots and no version -- the signature of a ConfuserEx-renamed identifier,
+     not of a real assembly.
+   * NetMod.exe carries a 47,936-byte FieldRVA blob (RVA 0x2000) that is
+     decoded at start-up by MethodDef 0x06000007 and handed to
+     System.Reflection.Assembly.Load, then registered on
+     AppDomain.AssemblyResolve (IL_01E9-IL_01FA).
+   * A runtime-satisfied AssemblyResolve handler is exactly how an obfuscated
+     reference name is resolved to an in-memory payload.
+
+7. Conclusion
+   CONFIRMED. Both ManifestResource rows carry Implementation tag 1
+   (AssemblyRef) pointing at AssemblyRef row 24, whose name is an
+   obfuscated identifier. No File or ExportedType table exists to carry
+   them instead. System.Reflection.Metadata independently reports
+   impl=AssemblyReference for both rows.
+
+   CONSEQUENCE FOR THE PUBLICATION:
+   The WPF resource set -- including any BAML -- is NOT inside NetMod.exe.
+   It resides in the obfuscated assembly resolved at run time, which is
+   the same payload carried in the FieldRVA blob. The FieldRVA payload is
+   therefore not an incidental helper: it is very likely the container of
+   the application's entire compiled UI resource set.
+
+   This ALSO explains why Round 3 reported BAML absent from the extracted
+   binaries, and why no previous round could find BAML to decode: it was
+   never in NetMod.exe.
+
+   Status: CONFIRMED for the metadata link (raw bytes + two independent
+   readers). The link 'AssemblyRef #24 == the FieldRVA payload' is
+   INFERRED, not proven: it would require decoding FieldRVA stage 3 and
+   reading that assembly's name.

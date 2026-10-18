@@ -1,0 +1,59 @@
+%% System context - NetMod VPN Client 4.6.0
+%% Solid edge  = relationship established from recovered bytes/metadata
+%% Dashed edge = inferred, not demonstrated
+%% UNRESOLVED  = the evidence does not determine this
+flowchart TB
+
+    USER(["User"])
+
+    subgraph HOST["Windows host"]
+        direction TB
+        APP["<b>NetMod.exe</b><br/>.NET Framework 4.7.2 · x86 · WPF<br/>625,664 bytes"]
+        TUN["<b>v2ray.exe</b> / <b>ssr-local.exe</b><br/>Go / native protocol cores"]
+        SOCKS["<b>badvpn-tun2socks</b><br/>userspace TUN to SOCKS5"]
+        DNSF["<b>dnstt-client.exe</b><br/><b>pdnsd.exe</b>"]
+        SSH["<b>plink.exe</b><br/>PuTTY SSH"]
+        TAP["TAP-Windows adapter<br/><i>tap0901</i> (driver)"]
+        ROUTE["Host routing table<br/>+ interface DNS"]
+    end
+
+    subgraph REMOTE["Remote endpoints"]
+        direction TB
+        SRV["Configured proxy / tunnel server"]
+        GEO["Third-party geo-IP API<br/><i>key embedded in binary</i>"]
+        UPD["Software update host"]
+        TEL["AppCenter telemetry<br/><i>Microsoft</i>"]
+    end
+
+    USER -->|"launches, configures"| APP
+
+    APP -->|"spawns, supervises<br/>CONFIRMED: ProcessRunner 0x06000254"| TUN
+    APP -->|"spawns<br/>CONFIRMED"| SOCKS
+    APP -->|"spawns<br/>CONFIRMED"| DNSF
+    APP -.->|"spawns<br/>INFERRED: settings present, argv unrecovered"| SSH
+
+    APP -->|"creates + configures<br/>CONFIRMED"| TAP
+    TUN <--> TAP
+    SOCKS <--> TAP
+    TAP -->|"carries tunnelled traffic<br/>CONFIRMED"| ROUTE
+    APP -->|"installs / removes routes,<br/>sets DNS<br/>CONFIRMED"| ROUTE
+
+    APP -->|"SOCKS5 / HTTP on loopback<br/>CONFIRMED"| SOCKS
+    TUN -->|"upstream tunnel<br/>CONFIRMED"| SRV
+    DNSF -->|"DNS over tunnel<br/>CONFIRMED"| SRV
+    SSH -.-> SRV
+
+    APP -->|"geo-IP lookup<br/>CONFIRMED call site"| GEO
+    APP -->|"update check / payload<br/>CONFIRMED acquisition"| UPD
+    APP -.->|"UNRESOLVED:<br/>payload to process launch"| UPD
+    APP -->|"telemetry<br/>CONFIRMED reference"| TEL
+
+    classDef confirmed fill:#e8f5e9,stroke:#2e7d32,stroke-width:1px
+    classDef inferred fill:#fff8e1,stroke:#f9a825,stroke-width:1px,stroke-dasharray:5 3
+    classDef unresolved fill:#ffebee,stroke:#c62828,stroke-width:2px
+    classDef external fill:#eceff1,stroke:#546e7a,stroke-width:1px
+
+    class APP,TUN,SOCKS,DNSF,TAP,ROUTE confirmed
+    class SSH inferred
+    class UPD unresolved
+    class SRV,GEO,TEL external

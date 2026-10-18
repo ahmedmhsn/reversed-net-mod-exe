@@ -1,0 +1,57 @@
+%% Connection lifecycle - the confirmed sequence, with every unknown marked.
+%% Dashed steps are inferred from control flow; they were NOT observed running.
+sequenceDiagram
+    autonumber
+    actor User
+    participant Vpn as VpnService
+    participant NetM as NetworkManagement
+    participant V2Ray as V2RayService / SshService
+    participant Proc as ProcessRunner
+    participant Tun as tun2socks / v2ray
+    participant Tap as TAP-Windows adapter
+    participant OS as Host routing + DNS
+
+    User->>Vpn: connect()
+    Note over Vpn: CONFIRMED - all bodies decoded
+
+    Vpn->>NetM: enumerate adapters (WMI)
+    Note right of NetM: CONFIRMED<br/>SELECT * FROM Win32_NetworkAdapter<br/>WHERE Manufacturer = 'TAP-Windows Provider V9'
+    NetM-->>Vpn: TAP adapter handle
+
+    Vpn->>Vpn: resolve config from DefaultPreferences
+    Note right of Vpn: CONFIRMED - 39 methods, literals recovered
+
+    alt V2Ray mode
+        Vpn->>V2Ray: build v2ray config
+        Note right of V2Ray: CONFIRMED - 46-method V2RayConfig<br/>full JSON key vocabulary
+        V2Ray->>Proc: write profile.json, launch v2ray
+    else SOCKS / proxy mode
+        Vpn->>Proc: launch tun2socks with recovered argv
+        Note right of Proc: CONFIRMED - argument template recovered<br/>--tundev "tap0901:..." --socks-server-addr 127.0.0.1:&lt;port&gt;
+    else SSH mode
+        Vpn->>Proc: launch plink
+        Note right of Proc: INFERRED - settings keys present,<br/>exact argv UNRESOLVED
+    end
+
+    Proc-->>Vpn: child process handle
+    Vpn->>OS: add routes, set interface DNS 10.4.2.1
+    Note right of OS: CONFIRMED
+    Vpn->>OS: remove saved default-gateway entry
+    Note right of OS: CONFIRMED<br/>see NF-03
+    Tap-->>User: traffic flows
+    Note over Tap: CONFIRMED - adapter and address assignment<br/>observed in recovered configuration only
+
+    rect rgb(255, 251, 235)
+        Note over Vpn,OS: UNRESOLVED - what happens between<br/>"process started" and "gateway removed".<br/>No runtime observation was made, so the<br/>ordering of these steps is inferred,<br/>not demonstrated.
+    end
+
+    User->>Vpn: disconnect()
+    Vpn->>Proc: kill helper process
+    Vpn->>OS: remove installed routes
+    Vpn->>OS: **restore saved default gateway**
+    Note right of OS: CONFIRMED on the orderly path<br/>- single restoration site
+    Vpn->>Tap: release TAP configuration
+
+    rect rgb(255, 235, 238)
+        Note over User,OS: UNRESOLVED - abnormal termination.<br/>Nothing guarantees restoration after a crash,<br/>a kill, or a power loss.<br/>See NF-03.
+    end

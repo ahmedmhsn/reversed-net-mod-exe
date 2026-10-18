@@ -1,0 +1,42 @@
+%% Update flow - what is verified, and exactly where the chain breaks.
+flowchart TB
+    START(["User triggers update check"]):::trig
+
+    APU["<CheckForUpdate&gt;d__11<br/>0x0600028A · 1313 bytes<br/>async state machine"]:::confirmed
+    API["UpdateApi<br/>6 methods"]:::confirmed
+    HTTPC["HttpClient.SendAsync<br/>System.Net.Http 4.2.0.0"]:::confirmed
+    CONST["Constants 0x060000FA<br/>payload URL"]:::confirmed
+    SAVE["write payload to a temp location"]:::unresolved
+    VERIFY{"<b>Integrity verification?</b>"}:::nodef
+    LAUNCH["ProcessRunner.Start<br/>0x06000254"]:::confirmed
+
+    START --> APU
+    APU --> API --> HTTPC
+    CONST -.-> APU
+    HTTPC --> SAVE
+
+    VERIFY -->|"NO - PROVEN"| LAUNCH
+    VERIFY -.->|"UNRESOLVED: no edge found"| LAUNCH
+
+    START -.-> LAUNCH
+    LAUNCH --> VICTIM["a downloaded file is executed"]:::unresolved
+
+    NOTE1["<b>CONFIRMED</b><br/>Acquisition happens.<br/>16 URL literals across the binary,<br/>not the 3 an earlier round reported."]:::ok
+    NOTE2["<b>CONFIRMED (defect)</b><br/>Zero signature, hash or asymmetric<br/>verification edges exist across all<br/>2,452 methods. The payload is never<br/>authenticated before use."]:::bad
+    NOTE3["<b>UNRESOLVED</b><br/>No call-graph edge connects any update<br/>method to ProcessRunner.Start.<br/>The only launch site in the binary is<br/>0x06000254."]:::bad
+    NOTE4["<b>Therefore</b><br/>The absence of verification is PROVEN.<br/>Arbitrary code execution via the<br/>update path is NOT proven, and is<br/>published as an open question - see NF-06."]:::warn
+
+    NOTE1 -.-> API
+    NOTE2 --- VERIFY
+    NOTE3 --- LAUNCH
+    NOTE4 -.-> VICTIM
+
+    classDef confirmed fill:#e8f5e9,stroke:#2e7d32
+    classDef unresolved fill:#ffebee,stroke:#c62828,stroke-width:2px
+    classDef trig fill:#e3f2fd,stroke:#1565c0
+    classDef ok fill:#e8f5e9,stroke:#2e7d32
+    classDef bad fill:#ffebee,stroke:#c62828
+    classDef warn fill:#fff8e1,stroke:#f9a825
+    classDef nodef fill:#eceff1,stroke:#546e7a,stroke-width:3px
+
+    class VERIFY nodef

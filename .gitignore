@@ -1,0 +1,63 @@
+# Build and packaging
+[Bb]in/
+[Oo]bj/
+[Oo]ut/
+[Dd]ebug/
+[Rr]elease/
+*.user
+*.suo
+.vs/
+.vscode/
+.idea/
+
+# .NET
+bin/
+obj/
+*.dll
+*.exe
+*.pdb
+*.deps.json
+*.runtimeconfig.json
+project.lock.json
+artifacts/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Node / misc tooling
+node_modules/
+
+# OS noise
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Never publish analyzed artifacts
+*.bin
+*.exe
+*.dll
+*.sys
+*.cat
+*.inf
+*.msi
+*.cab
+*.nupkg
+*.zip
+*.7z
+*.iso
+
+# Local scratch
+_work/
+*.local
+scratch/
+tmp/
+
+# Reports that may embed analysis output
+analysis-dump/
+*.il
+*.dump
+*.memdmp
